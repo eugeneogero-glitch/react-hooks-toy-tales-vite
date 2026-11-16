@@ -1,17 +1,44 @@
 import React from "react";
 
-function ToyCard() {
+function ToyCard({ toy, onDeleteToy, onUpdateToy }) {
+  const { id, name, image, likes } = toy;
+
+  const handleLikeClick = () => {
+    fetch(`http://localhost:3001/toys/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        likes: likes + 1,
+      }),
+    })
+      .then((res) => res.json())
+      .then((updatedToy) => onUpdateToy(updatedToy));
+  };
+
+  const handleDonateClick = () => {
+    fetch(`http://localhost:3001/toys/${id}`, {
+      method: "DELETE",
+    }).then((res) => {
+      if (res.ok) {
+        onDeleteToy(id);
+      }
+    });
+  };
+
   return (
     <div className="card" data-testid="toy-card">
-      <h2>{"" /* Toy's Name */}</h2>
-      <img
-        src={"" /* Toy's Image */}
-        alt={"" /* Toy's Name */}
-        className="toy-avatar"
-      />
-      <p>{"" /* Toy's Likes */} Likes </p>
-      <button className="like-btn">Like {"<3"}</button>
-      <button className="del-btn">Donate to GoodWill</button>
+      <h2>{name}</h2>
+      <img src={image} alt={name} className="toy-avatar" />
+      <p>{likes} Likes </p>
+      <button className="like-btn" onClick={handleLikeClick}>
+        Like {"<3"}
+      </button>
+      <button className="del-btn" onClick={handleDonateClick}>
+        Donate to GoodWill
+      </button>
     </div>
   );
 }
